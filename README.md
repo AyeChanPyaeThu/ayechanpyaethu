@@ -59,6 +59,7 @@ connecting with telegram bot
 backend part (admin dashboard)
 -use Supabase (postgresql) for database
 -integrate github with chatgpt
+
 -These are steps done: (Setting at Supabase and creating tables)
 Open Supabase Dashboard.
 Sign in or create an account.
@@ -74,6 +75,11 @@ Open the migration file from GitHub.
 Copy its complete SQL contents.
 Paste into the SQL Editor.
 Click Run.
+
 (Setting up Supabase in project)
 -npm install @supabase/supabase-js @supabase/ssr
 -url and publishable key in env file
+
+(Checking connection with Supabase and project)
+-app/api/health/supabase/route.ts do this mission
+-test the connection in localhost::3000/api/health/supabase and it shows json string success
