@@ -1,4 +1,8 @@
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
+import ProfileIntro, {
+  ProfileIntroFallback,
+} from "@/components/profile-intro";
 import {
   ChevronRight,
   Send,
@@ -46,20 +50,9 @@ export default function Home() {
             Hello, World! I'm
           </h1>
 
-          <span
-            className="text-2xl sm:text-3xl lg:text-4xl
-  font-bold mb-3 text-blue-500 leading-tight"
-          >
-            Aye Chan Pyae Thu
-          </span>
-
-          <p
-            className="text-sm sm:text-base lg:text-lg
-  mb-5 max-w-xl leading-relaxed"
-          >
-            I'm a passionate developer with a love for creating innovative
-            solutions.
-          </p>
+          <Suspense fallback={<ProfileIntroFallback />}>
+            <ProfileIntro />
+          </Suspense>
 
           <div className=" flex flex-wrap gap-3 sm:gap-4 mb-7">
             <Link href="#contact" className="neumorphic-two btn-interest">
@@ -387,20 +380,9 @@ export default function Home() {
             Hello, World! I'm
           </h1>
 
-          <span
-            className="text-2xl sm:text-3xl lg:text-4xl
-  font-bold mb-3 text-blue-500 leading-tight"
-          >
-            Aye Chan Pyae Thu
-          </span>
-
-          <p
-            className="text-sm sm:text-base lg:text-lg
-  mb-5 max-w-xl leading-relaxed"
-          >
-            I'm a passionate developer with a love for creating innovative
-            solutions.
-          </p>
+          <Suspense fallback={<ProfileIntroFallback />}>
+            <ProfileIntro />
+          </Suspense>
 
           <div className=" flex flex-wrap gap-3 sm:gap-4 mb-7">
             <Link href="#contact" className="neumorphic-two btn-interest">
