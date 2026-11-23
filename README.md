@@ -55,3 +55,25 @@ connecting with telegram bot
 -token in .env.local file
 -route.ts in app/api/feedback/ to handle message data from user to send to bot
 -input form in footer.tsx to get message data from user
+
+backend part (admin dashboard)
+-use Supabase (postgresql) for database
+-integrate github with chatgpt
+-These are steps done: (Setting at Supabase and creating tables)
+Open Supabase Dashboard.
+Sign in or create an account.
+Select New project.
+Choose your organization.
+Set the project name to personal-portfolio.
+Create a strong database password and save it somewhere secure.
+Choose a region appropriate for your visitors.
+Create the project and wait for it to finish provisioning.
+Open SQL Editor in Supabase.
+Select New query.
+Open the migration file from GitHub.
+Copy its complete SQL contents.
+Paste into the SQL Editor.
+Click Run.
+(Setting up Supabase in project)
+-npm install @supabase/supabase-js @supabase/ssr
+-url and publishable key in env file
