@@ -1,10 +1,12 @@
-import { connection, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Ensure this request-time check is not evaluated during prerendering.
-    await connection();
+    // Reading the incoming request makes this Route Handler request-dependent,
+    // so Next.js does not try to prerender it during the production build.
+    const requestUrl = new URL(request.url);
+    void requestUrl;
 
     const supabase = await createClient();
 
