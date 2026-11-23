@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
-  try {
-    // Reading the incoming request makes this Route Handler request-dependent,
-    // so Next.js does not try to prerender it during the production build.
-    const requestUrl = new URL(request.url);
-    void requestUrl;
+  // Access request data outside the try/catch. Next.js uses this request-time
+  // access to opt the Route Handler out of prerendering.
+  void request.url;
 
+  try {
     const supabase = await createClient();
 
     // A read-only query verifies the URL, key, Data API and table access.
