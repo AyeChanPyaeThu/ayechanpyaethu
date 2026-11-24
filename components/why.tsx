@@ -14,7 +14,7 @@ import {
 import { Button } from "@base-ui/react";
 
 type Interest = {
-  id: number;
+  id: string | number;
   name: string;
   description: string;
   img: string;
