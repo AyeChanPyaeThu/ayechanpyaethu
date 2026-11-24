@@ -17,10 +17,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { certificates } from "./data/projects";
 import { interests } from "./data/interest";
-import DetailsModal from "@/components/details-modal";
 import ProjectsSection, { ProjectsSectionFallback } from "@/components/projects-section";
+import AchievementsSection, { AchievementsSectionFallback } from "@/components/achievements-section";
 import Why from "@/components/why";
 
 export default function Home() {
@@ -206,91 +205,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Achievements */}
-      <div
-        className="w-full neumorphic-two
-  flex items-center justify-center"
-        id="achievements"
-      >
-        <div className="w-full px-3 sm:px-6 lg:px-12">
-          <h1
-            className="my-6 sm:my-8 mon-exbold
-  text-center text-2xl sm:text-3xl lg:text-4xl text-black"
-          >
-            Achievements
-          </h1>
-          <div className="flex flex-col items-end gap-5 mb-8 sm:mb-12 px-5 md:px-7">
-            <div
-              className="w-full grid grid-cols-1
-  sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 "
-            >
-              {certificates.length <= 4 ? (
-                <>
-                  {certificates.map((p) => (
-                    <div
-                      key={p.id}
-                      className="neumorphic-two border border-amber-900
-  rounded-2xl bg-white p-4 sm:p-5
-  hover:-translate-y-2 transition duration-300"
-                    >
-                      <img
-                        src={p.img}
-                        alt={p.name}
-                        className="h-42 md:h-36  w-full object-cover rounded-2xl"
-                      />
-                      <h3 className="mt-3 font-semibold text-orange-900">
-                        {p.name}
-                      </h3>
-                      <p className="text-black font-bold">{p.note}</p>
-                      <DetailsModal
-                        project={p}
-                        variant="certificate"
-                        triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600"
-                      />
-                    </div>
-                  ))}{" "}
-                </>
-              ) : (
-                <>
-                  {certificates.slice(0, 4).map((p) => (
-                    <div
-                      key={p.id}
-                      className="neumorphic-two border border-amber-900
-  rounded-2xl bg-white p-4 sm:p-5
-  hover:-translate-y-2 transition duration-300"
-                    >
-                      <img
-                        src={p.img}
-                        alt={p.name}
-                        className="h-42 md:h-36  w-full object-cover rounded-2xl"
-                      />
-                      <h3 className="mt-3 font-semibold text-orange-900">
-                        {p.name}
-                      </h3>
-                      <p className="text-black font-bold">{p.note}</p>
-                      <DetailsModal
-                        project={p}
-                        variant="certificate"
-                        triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600"
-                      />
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-            <Link
-              href="/list#achievements"
-              className="text-black text-xl w-full flex items-center justify-center"
-            >
-              More{" "}
-              <ChevronsRight
-                className="inline-block m-0 md:ml-2 text-amber-900 "
-                size={34}
-              />
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Suspense fallback={<AchievementsSectionFallback />}>
+        <AchievementsSection />
+      </Suspense>
 
       {/* Interests  */}
       <div
