@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Profile } from "@/lib/types/profile";
 
 /**
@@ -10,7 +10,7 @@ import type { Profile } from "@/lib/types/profile";
  * the database-level security boundary.
  */
 export async function getPublicProfile(): Promise<Profile | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("profiles")

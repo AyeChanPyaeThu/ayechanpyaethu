@@ -1,6 +1,7 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
+
 import type { Skill } from "@/lib/types/skill";
 
 /**
@@ -10,12 +11,12 @@ import type { Skill } from "@/lib/types/skill";
  * Supabase RLS remains the database-level security boundary.
  */
 export async function getPublicSkills(): Promise<Skill[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("skills")
     .select(
-      "id, name, category, description, proficiency_label, sort_order, is_published, created_at, updated_at"
+      "id, name, category, description, proficiency_label, icon, sort_order, is_published, created_at, updated_at"
     )
     .eq("is_published", true)
     .order("sort_order", { ascending: true });

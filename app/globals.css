@@ -200,7 +200,7 @@ body::-webkit-scrollbar,
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #999;
+  color: black;
   cursor: pointer;
 }
 

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type {
   Project,
   ProjectImageRecord,
@@ -15,7 +15,7 @@ const PROJECT_COLUMNS =
  * Supabase RLS remains the database-level security boundary.
  */
 async function getProjects(featuredOnly: boolean): Promise<Project[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   let query = supabase
     .from("projects")

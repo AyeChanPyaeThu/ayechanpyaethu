@@ -9,6 +9,7 @@ export interface Skill {
   category: string;
   description: string | null;
   proficiency_label: string | null;
+  icon: string | null;
   sort_order: number;
   is_published: boolean;
   created_at: string;

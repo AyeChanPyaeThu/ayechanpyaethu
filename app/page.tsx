@@ -9,11 +9,16 @@ import {
   Handshake,
   BicepsFlexed,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import ProjectsSection, { ProjectsSectionFallback } from "@/components/projects-section";
-import AchievementsSection, { AchievementsSectionFallback } from "@/components/achievements-section";
-import InterestsSection, { InterestsSectionFallback } from "@/components/interests-section";
+import ProjectsSection, {
+  ProjectsSectionFallback,
+} from "@/components/projects-section";
+import AchievementsSection, {
+  AchievementsSectionFallback,
+} from "@/components/achievements-section";
+import InterestsSection, {
+  InterestsSectionFallback,
+} from "@/components/interests-section";
 
 export default function Home() {
   return (

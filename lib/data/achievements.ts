@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Achievement, AchievementRecord } from "@/lib/types/achievement";
 
 /**
@@ -8,7 +8,7 @@ import type { Achievement, AchievementRecord } from "@/lib/types/achievement";
  * Supabase RLS remains the database-level security boundary.
  */
 export async function getPublicAchievements(): Promise<Achievement[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("achievements")

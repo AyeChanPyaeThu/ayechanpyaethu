@@ -1,10 +1,10 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Interest, InterestRecord } from "@/lib/types/interest";
 
 export async function getPublicInterests(): Promise<Interest[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("interests")

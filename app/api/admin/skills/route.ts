@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import type { Skill } from "@/lib/types/skill";
 
 const SKILL_COLUMNS =
-  "id, name, category, description, proficiency_label, sort_order, is_published, created_at, updated_at";
+  "id, name, category, description, proficiency_label, icon, sort_order, is_published, created_at, updated_at";
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -13,6 +13,7 @@ const EDITABLE_FIELDS = [
   "category",
   "description",
   "proficiency_label",
+  "icon",
   "sort_order",
   "is_published",
 ] as const;
@@ -98,6 +99,22 @@ function validateSkillFields(
         : null;
   } else if (!partial) {
     values.proficiency_label = null;
+  }
+
+    if ("icon" in body) {
+    if (
+      body.icon !== null &&
+      (typeof body.icon !== "string" || body.icon.length > 80)
+    ) {
+      return { valid: false, values };
+    }
+
+    values.icon =
+      typeof body.icon === "string"
+        ? body.icon.trim() || null
+        : null;
+  } else if (!partial) {
+    values.icon = null;
   }
 
   if ("sort_order" in body) {

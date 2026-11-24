@@ -112,3 +112,11 @@ migration for rate limitation for feedback
 
 -create bucket at Supabase
 -assigning storage policies in Supabase query to ensure only authenticated admin edit images, although users can view cause bucket is public ( as in 0004_storage_security.sql in supabase\migration)
+
+## deployed step by step on vercel!!
+
+after a long while, deployment works well
+-testing each part to check all functions work correctly
+
+updating admin dashboard ui
+creating each interface for admin dashboard

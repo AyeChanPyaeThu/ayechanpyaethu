@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type {
   PublicSiteSettings,
   SiteSettingRecord,
@@ -11,7 +11,7 @@ import type {
  * Supabase RLS also enforces this restriction at the database level.
  */
 export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("site_settings")
