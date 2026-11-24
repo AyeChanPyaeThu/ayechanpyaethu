@@ -56,11 +56,41 @@ function isNullableText(
 }
 
 function isValidUrlOrPath(value: string): boolean {
-  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  const trimmed = value.trim();
 
+  if (!trimmed || /[\u0000-\u001F\\]/.test(trimmed)) {
+    return false;
+  }
+
+  // Validate local paths.
+  if (trimmed.startsWith("/")) {
+    if (trimmed.startsWith("//")) {
+      return false;
+    }
+
+    let pathname = trimmed.split(/[?#]/, 1)[0];
+
+    try {
+      pathname = decodeURIComponent(pathname);
+    } catch {
+      return false;
+    }
+
+    const segments = pathname.split("/");
+
+    return !segments.some(
+      (segment) => segment === "." || segment === ".."
+    );
+  }
+
+  // Validate external URLs.
   try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
+    const url = new URL(trimmed);
+
+    return (
+      url.protocol === "https:" ||
+      url.protocol === "http:"
+    );
   } catch {
     return false;
   }

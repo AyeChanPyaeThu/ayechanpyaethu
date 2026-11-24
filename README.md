@@ -83,3 +83,17 @@ Click Run.
 (Checking connection with Supabase and project)
 -app/api/health/supabase/route.ts do this mission
 -test the connection in localhost::3000/api/health/supabase and it shows json string success
+
+Database
+-create tables in Supabase
+-inserting data and information
+
+-api management files in nextjs for each table
+-test security to limit access to admin dashboard
+-crud for each information section to customize the information as wish
+-limit submit rate for feedback ( to avoid spam messages requests )
+-test validation for text, emails, other necessary information in each section (admin,profile,skills,projects,achievements,interests,site settings, contact messages)
+
+## -rate limiting for deployment production
+
+using Supabase PostgreSQL-backed rate limiter

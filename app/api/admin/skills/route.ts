@@ -37,10 +37,10 @@ function validateSkillFields(
 ): { valid: boolean; values: Partial<Record<EditableSkillField, unknown>> } {
   const values: Partial<Record<EditableSkillField, unknown>> = {};
 
-  for (const key of Object.keys(body)) {
+   for (const key of Object.keys(body)) {
     if (
-      key !== "id" &&
-      !EDITABLE_FIELDS.includes(key as EditableSkillField)
+      !EDITABLE_FIELDS.includes(key as EditableSkillField) &&
+      !(partial && key === "id")
     ) {
       return { valid: false, values };
     }

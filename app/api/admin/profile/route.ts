@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import type { Json, Profile } from "@/lib/types/profile";
@@ -26,6 +27,32 @@ function isOptionalText(
 
 function isJsonObject(value: unknown): value is Record<string, Json> {
   return isPlainObject(value);
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidUrlOrPath(value: string): boolean {
+  const trimmed = value.trim();
+
+  if (!trimmed) return true;
+
+  // Allow local paths, but reject protocol-relative URLs and path traversal.
+  if (trimmed.startsWith("/")) {
+    return (
+      !trimmed.startsWith("//") &&
+      !trimmed.includes("\\") &&
+      !trimmed.split("/").includes("..")
+    );
+  }
+
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 /** Retrieve the complete profile for the authenticated administrator. */
@@ -85,11 +112,11 @@ export async function PUT(request: NextRequest) {
     !isPlainObject(body) ||
     typeof body.display_name !== "string" ||
     body.display_name.trim().length === 0 ||
-    body.display_name.length > 120 ||
+    body.display_name.trim().length > 120 ||
     typeof body.headline !== "string" ||
-    body.headline.length > 200 ||
+    body.headline.trim().length > 200 ||
     typeof body.biography !== "string" ||
-    body.biography.length > 5000 ||
+    body.biography.trim().length > 5000 ||
     !isOptionalText(body.location, 120) ||
     !isOptionalText(body.public_email, 254) ||
     !isOptionalText(body.avatar_url, 2048) ||
@@ -100,8 +127,42 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          "Provide a display_name, headline, biography, valid optional profile fields, social_links object, and is_public boolean.",
+        error: "Please provide valid profile information and optional fields.",
+      },
+      { status: 400 }
+    );
+  }
+
+  const publicEmail =
+    typeof body.public_email === "string"
+      ? body.public_email.trim()
+      : null;
+
+  const avatarUrl =
+    typeof body.avatar_url === "string"
+      ? body.avatar_url.trim()
+      : null;
+
+  const resumeUrl =
+    typeof body.resume_url === "string"
+      ? body.resume_url.trim()
+      : null;
+
+  if (publicEmail && !isValidEmail(publicEmail)) {
+    return NextResponse.json(
+      { success: false, error: "Please provide a valid public email address." },
+      { status: 400 }
+    );
+  }
+
+  if (
+    (avatarUrl && !isValidUrlOrPath(avatarUrl)) ||
+    (resumeUrl && !isValidUrlOrPath(resumeUrl))
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Avatar and resume URLs must be valid HTTP(S) URLs or local paths.",
       },
       { status: 400 }
     );
@@ -112,10 +173,13 @@ export async function PUT(request: NextRequest) {
     display_name: body.display_name.trim(),
     headline: body.headline.trim(),
     biography: body.biography.trim(),
-    location: body.location ?? null,
-    public_email: body.public_email ?? null,
-    avatar_url: body.avatar_url ?? null,
-    resume_url: body.resume_url ?? null,
+    location:
+      typeof body.location === "string"
+        ? body.location.trim() || null
+        : null,
+    public_email: publicEmail || null,
+    avatar_url: avatarUrl || null,
+    resume_url: resumeUrl || null,
     social_links: body.social_links ?? {},
     is_public: body.is_public,
   };

@@ -96,13 +96,15 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (
-    typeof body !== "object" ||
-    body === null ||
-    !("id" in body) ||
-    !("status" in body) ||
-    !isUuid(body.id) ||
-    !isMessageStatus(body.status)
-  ) {
+  typeof body !== "object" ||
+  body === null ||
+  Array.isArray(body) ||
+  Object.keys(body).some((key) => !["id", "status"].includes(key)) ||
+  !("id" in body) ||
+  !("status" in body) ||
+  !isUuid(body.id) ||
+  !isMessageStatus(body.status)
+) {
     return NextResponse.json(
       { success: false, error: "A valid message ID and status are required." },
       { status: 400 }
@@ -160,11 +162,13 @@ export async function DELETE(request: NextRequest) {
   }
 
   if (
-    typeof body !== "object" ||
-    body === null ||
-    !("id" in body) ||
-    !isUuid(body.id)
-  ) {
+  typeof body !== "object" ||
+  body === null ||
+  Array.isArray(body) ||
+  Object.keys(body).some((key) => key !== "id") ||
+  !("id" in body) ||
+  !isUuid(body.id)
+) {
     return NextResponse.json(
       { success: false, error: "A valid message ID is required." },
       { status: 400 }

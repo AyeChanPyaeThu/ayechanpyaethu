@@ -1,9 +1,118 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createHmac } from "node:crypto";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+const RATE_LIMIT = 5;
+const WINDOW_MS = 10 * 60 * 1000;
+
+// In-memory rate limit storage for local development.
+const requestCounts = new Map<
+  string,
+  { count: number; resetAt: number }
+>();
+
+function getClientIp(request: NextRequest): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const current = requestCounts.get(ip);
+
+  if (!current || now >= current.resetAt) {
+    requestCounts.set(ip, {
+      count: 1,
+      resetAt: now + WINDOW_MS,
+    });
+    return false;
+  }
+
+  if (current.count >= RATE_LIMIT) {
+    return true;
+  }
+
+  current.count += 1;
+  return false;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    // Identify the visitor without storing their raw IP address.
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!serviceRoleKey) {
+  throw new Error("Supabase server key is not configured.");
+}
+
+const visitorIp =
+  request.headers.get("x-real-ip") ??
+  request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+  "unknown";
+
+const keyHash = createHmac("sha256", serviceRoleKey)
+  .update(visitorIp)
+  .digest("hex");
+
+const adminSupabase = createAdminClient();
+
+const { data: rateLimitData, error: rateLimitError } =
+  await adminSupabase.rpc("consume_feedback_rate_limit", {
+    p_key_hash: keyHash,
+    p_limit: 5,
+    p_window_seconds: 600,
+  });
+
+if (rateLimitError) {
+  console.error("Feedback rate limit check failed:", rateLimitError);
+
+  return NextResponse.json(
+    { success: false, error: "Unable to process your request. Please try again." },
+    { status: 503 }
+  );
+}
+
+const rateLimit = Array.isArray(rateLimitData)
+  ? rateLimitData[0]
+  : null;
+
+if (!rateLimit) {
+  return NextResponse.json(
+    { success: false, error: "Unable to process your request. Please try again." },
+    { status: 503 }
+  );
+}
+
+if (!rateLimit.allowed) {
+  return NextResponse.json(
+    { success: false, error: "Too many messages. Please try again later." },
+    {
+      status: 429,
+      headers: {
+        "Retry-After": String(rateLimit.retry_after_seconds),
+      },
+    }
+  );
+}
+    const ip = getClientIp(request);
+
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Too many messages. Please try again in 10 minutes.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body: unknown = await request.json();
+
     const message =
       typeof body === "object" &&
       body !== null &&
@@ -26,23 +135,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save the message first. The public insert policy and database constraints
-    // provide a second validation layer; visitors cannot read submitted messages.
     const supabase = await createClient();
+
     const { error: insertError } = await supabase
       .from("contact_messages")
       .insert({ message });
 
     if (insertError) {
       console.error("Supabase contact message insert failed:", insertError);
+
       return NextResponse.json(
-        { success: false, error: "Could not save your message. Please try again." },
+        {
+          success: false,
+          error: "Could not save your message. Please try again.",
+        },
         { status: 503 }
       );
     }
 
-    // Telegram is an additional notification channel, not the message store.
-    // A Telegram outage must not discard a message already saved in Supabase.
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
@@ -76,7 +186,9 @@ export async function POST(request: NextRequest) {
         console.error("Telegram notification error:", telegramError);
       }
     } else {
-      console.warn("Telegram notification skipped: environment variables are not configured.");
+      console.warn(
+        "Telegram notification skipped: environment variables are not configured."
+      );
     }
 
     return NextResponse.json({
@@ -85,8 +197,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Contact message API error:", error);
+
     return NextResponse.json(
-      { success: false, error: "Something went wrong. Please try again." },
+      {
+        success: false,
+        error: "Something went wrong. Please try again.",
+      },
       { status: 500 }
     );
   }

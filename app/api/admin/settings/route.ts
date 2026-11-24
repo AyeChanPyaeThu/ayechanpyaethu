@@ -6,6 +6,16 @@ import {
   type SiteSettingRecord,
 } from "@/lib/types/site-settings";
 
+const MAX_SETTING_VALUE_LENGTH = 10_000;
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value)
+  );
+}
+
 function isSiteSettingKey(value: unknown): value is SiteSettingKey {
   return (
     typeof value === "string" &&
@@ -66,26 +76,27 @@ export async function PUT(request: NextRequest) {
   }
 
   if (
-    typeof body !== "object" ||
-    body === null ||
-    !("key" in body) ||
-    !("value" in body) ||
-    !("is_public" in body) ||
-    !isSiteSettingKey(body.key) ||
-    typeof body.value !== "object" ||
-    body.value === null ||
-    Array.isArray(body.value) ||
-    typeof body.is_public !== "boolean"
-  ) {
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          "A valid setting key, JSON object value, and is_public boolean are required.",
-      },
-      { status: 400 }
-    );
-  }
+  !isPlainObject(body) ||
+  Object.keys(body).some(
+    (key) => !["key", "value", "is_public"].includes(key)
+  ) ||
+  !("key" in body) ||
+  !("value" in body) ||
+  !("is_public" in body) ||
+  !isSiteSettingKey(body.key) ||
+  !isPlainObject(body.value) ||
+  JSON.stringify(body.value).length > MAX_SETTING_VALUE_LENGTH ||
+  typeof body.is_public !== "boolean"
+) {
+  return NextResponse.json(
+    {
+      success: false,
+      error:
+        "A valid setting key, JSON object value, and is_public boolean are required.",
+    },
+    { status: 400 }
+  );
+}
 
   const { data, error } = await admin.supabase
     .from("site_settings")

@@ -37,7 +37,36 @@ function isValidDate(value: string): boolean {
 }
 
 function isValidUrlOrPath(value: string): boolean {
-  return value.startsWith("/") || /^https?:\/\//i.test(value);
+  const trimmed = value.trim();
+
+  if (!trimmed || /[\u0000-\u001F\\]/.test(trimmed)) {
+    return false;
+  }
+
+  if (trimmed.startsWith("/")) {
+    if (trimmed.startsWith("//")) {
+      return false;
+    }
+
+    let pathname = trimmed.split(/[?#]/, 1)[0];
+
+    try {
+      pathname = decodeURIComponent(pathname);
+    } catch {
+      return false;
+    }
+
+    return !pathname.split("/").some(
+      (segment) => segment === "." || segment === ".."
+    );
+  }
+
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 function validateAchievementFields(
