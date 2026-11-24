@@ -97,3 +97,7 @@ Database
 ## -rate limiting for deployment production
 
 using Supabase PostgreSQL-backed rate limiter
+migration for rate limitation for feedback
+
+-implementation of MFA authentication to assure admin
+-2 factor authentication ( email and password first step and 6 digit authentication code second step )

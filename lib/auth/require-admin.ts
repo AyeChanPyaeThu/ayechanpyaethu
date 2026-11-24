@@ -14,9 +14,13 @@ export async function requireAdmin() {
 
   const userId = claimsData?.claims?.sub;
 
-  if (claimsError || typeof userId !== "string") {
-    return null;
-  }
+  if (
+  claimsError ||
+  typeof userId !== "string" ||
+  claimsData?.claims?.aal !== "aal2"
+) {
+  return null;
+}
 
   const { data: roleRecord, error: roleError } = await supabase
     .from("user_roles")

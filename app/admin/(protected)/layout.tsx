@@ -19,6 +19,10 @@ async function ProtectedAdminContent({ children }: { children: ReactNode }) {
     redirect("/admin/login");
   }
 
+  if (claimsData?.claims?.aal !== "aal2") {
+    redirect("/admin/login");
+  }
+
   const { data: roleRecord, error: roleError } = await supabase
     .from("user_roles")
     .select("role")
