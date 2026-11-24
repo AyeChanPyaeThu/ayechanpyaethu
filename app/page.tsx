@@ -188,7 +188,21 @@ export default function Home() {
         </div>
       </div>
 
-      <SkillsSection />
+      <Suspense
+        fallback={
+          <div
+            className="flex flex-col items-center justify-center mt-8 w-full text-black"
+            id="skills"
+          >
+            <h1 className="mb-5 text-center text-2xl sm:text-3xl lg:text-4xl">
+              My Skills & Tech
+            </h1>
+            <div className="min-h-32 w-full" />
+          </div>
+        }
+      >
+        <SkillsSection />
+      </Suspense>
 
       {/* About me */}
       <div
