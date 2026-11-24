@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Navbar from "../components/navbar";
+import PublicSiteShell from "@/components/public-site-shell";
 // import Navbar from "@/components/testcomponent";
-import Footer from "../components/footer";
+
 import { Geist, Geist_Mono, Montserrat_Alternates } from "next/font/google";
 import "./globals.css";
-import Contact from "@/components/contact";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${montserratAlternates.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col">
-        <Navbar />
-        {children}
-        <Contact />
+        <PublicSiteShell>{children}</PublicSiteShell>
       </body>
     </html>
   );
