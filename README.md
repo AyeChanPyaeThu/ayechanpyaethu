@@ -101,3 +101,9 @@ migration for rate limitation for feedback
 
 -implementation of MFA authentication to assure admin
 -2 factor authentication ( email and password first step and 6 digit authentication code second step )
+-aal enforcement
+
+## preparing for deployment by ensuring backend security
+
+-checking .env.local is ignored by git to make sure keys are not public
+-production security headers in next.config.ts

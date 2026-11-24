@@ -67,6 +67,8 @@ export default function AdminLoginPage() {
       setChallengeId(challenge.id);
       setStep("mfa");
     } catch {
+      await createClient().auth.signOut();
+      setStep("password");
       setErrorMessage("Unable to start MFA verification. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -101,8 +103,15 @@ export default function AdminLoginPage() {
       setChallengeId(challenge.id);
       setStep("mfa");
     } catch {
+      await createClient().auth.signOut();
+      setStep("password");
+      setFactorId("");
+      setChallengeId("");
+      setQrCode("");
+      setTotpSecret("");
+      setCode("");
       setErrorMessage(
-        "Unable to start authenticator enrollment. Please try again.",
+        "Unable to start authenticator enrollment. Please sign in again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -124,7 +133,10 @@ export default function AdminLoginPage() {
       });
 
       if (error) {
-        setErrorMessage("Invalid or expired code. Please try again.");
+        await supabase.auth.signOut();
+        setStep("password");
+        setCode("");
+        setErrorMessage("Invalid or expired code. Please sign in again.");
         return;
       }
 
@@ -142,7 +154,10 @@ export default function AdminLoginPage() {
       router.replace("/admin");
       router.refresh();
     } catch {
-      setErrorMessage("MFA verification failed. Please try again.");
+      await createClient().auth.signOut();
+      setStep("password");
+      setCode("");
+      setErrorMessage("MFA verification failed. Please sign in again.");
     } finally {
       setIsSubmitting(false);
     }
