@@ -14,7 +14,6 @@ import Link from "next/link";
 import ProjectsSection, { ProjectsSectionFallback } from "@/components/projects-section";
 import AchievementsSection, { AchievementsSectionFallback } from "@/components/achievements-section";
 import InterestsSection, { InterestsSectionFallback } from "@/components/interests-section";
-import { getPublicInterests } from "@/lib/data/interests";
 
 export default function Home() {
   return (
@@ -204,7 +203,7 @@ export default function Home() {
       </Suspense>
 
       <Suspense fallback={<InterestsSectionFallback />}>
-        <InterestsSection interests={await getPublicInterests()} />
+        <InterestsSection />
       </Suspense>
     </div>
   );
