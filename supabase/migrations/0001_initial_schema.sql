@@ -109,6 +109,7 @@ create table public.achievements (
   achieved_on date,
   credential_url text,
   image_url text,
+  image_urls text[] not null default '{}',
   status public.content_status not null default 'draft',
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
