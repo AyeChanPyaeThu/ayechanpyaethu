@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { projects } from "../data/projects";
+import { certificates, projects } from "../data/projects";
 import DetailsModal from "@/components/details-modal";
 
 export default function List() {
@@ -61,7 +61,7 @@ export default function List() {
 
         <div className="w-full mb-12">
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {projects.map((p) => (
+            {certificates.map((p) => (
               <div
                 key={p.id}
                 className="min-w-0 neumorphic-two rounded-lg bg-white px-5 sm:px-6 lg:px-8 py-6 hover:-translate-y-2 transition duration-300"
@@ -80,6 +80,7 @@ export default function List() {
 
                 <DetailsModal
                   project={p}
+                  variant="certificate"
                   triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600 transition"
                 />
               </div>

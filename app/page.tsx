@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import ProfileIntro, {
-  ProfileIntroFallback,
-} from "@/components/profile-intro";
+import ProfileIntro, { ProfileIntroFallback } from "@/components/profile-intro";
 import {
   ChevronRight,
   Send,
@@ -18,7 +16,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { projects } from "./data/projects";
+import { certificates, projects } from "./data/projects";
 import { interests } from "./data/interest";
 import DetailsModal from "@/components/details-modal";
 import Why from "@/components/why";
@@ -108,7 +106,7 @@ export default function Home() {
         </div>
         <img
           className=" w-full max-w-70 sm:max-w-sm md:max-w-full md:col-span-2 mx-auto p-3 sm:p-6 lg:p-10 object-cover rounded-2xl shadow-lg"
-          src="/pf9.jfif"
+          src="/profile/pf9.jfif"
           alt="Profile Image"
         />
       </div>
@@ -372,7 +370,7 @@ export default function Home() {
       >
         <img
           className=" w-full max-w-70 sm:max-w-sm md:max-w-full md:col-span-2 mx-auto sm:p-6 lg:p-10 object-cover rounded-2xl shadow-lg "
-          src="/pf9.jfif"
+          src="/profile/pf9.jfif"
           alt="Profile Image"
         />
         <div className="flex flex-col col-span-1 md:col-span-3 items-start justify-center text-black w-full ">
@@ -456,9 +454,9 @@ export default function Home() {
               className="w-full grid grid-cols-1
   sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 "
             >
-              {projects.length <= 4 ? (
+              {certificates.length <= 4 ? (
                 <>
-                  {projects.map((p) => (
+                  {certificates.map((p) => (
                     <div
                       key={p.id}
                       className="neumorphic-two border border-amber-900
@@ -476,6 +474,7 @@ export default function Home() {
                       <p className="text-black font-bold">{p.note}</p>
                       <DetailsModal
                         project={p}
+                        variant="certificate"
                         triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600"
                       />
                     </div>
@@ -483,7 +482,7 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  {projects.slice(0, 4).map((p) => (
+                  {certificates.slice(0, 4).map((p) => (
                     <div
                       key={p.id}
                       className="neumorphic-two border border-amber-900
@@ -501,6 +500,7 @@ export default function Home() {
                       <p className="text-black font-bold">{p.note}</p>
                       <DetailsModal
                         project={p}
+                        variant="certificate"
                         triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600"
                       />
                     </div>

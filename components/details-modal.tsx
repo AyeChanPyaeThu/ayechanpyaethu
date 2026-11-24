@@ -17,19 +17,24 @@ type Project = {
 
 type DetailsModalProps = {
   project: Project;
+  variant?: "project" | "certificate";
   triggerClassName?: string;
 };
 
 export default function DetailsModal({
   project,
+  variant = "project",
   triggerClassName,
 }: DetailsModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const modalId = `${variant}-${project.id}`;
 
   const images =
-    project.images && project.images.length >= 3
-      ? project.images.slice(0, 3)
-      : [project.img, project.img, project.img];
+    variant === "certificate"
+      ? (project.images ?? [])
+      : project.images && project.images.length >= 3
+        ? project.images.slice(0, 3)
+        : [project.img, project.img, project.img];
 
   function openModal() {
     dialogRef.current?.showModal();
@@ -52,8 +57,8 @@ export default function DetailsModal({
 
       <dialog
         ref={dialogRef}
-        aria-labelledby={`project-title-${project.id}`}
-        aria-describedby={`project-description-${project.id}`}
+        aria-labelledby={`${modalId}-title`}
+        aria-describedby={`${modalId}-description`}
         className="project-modal"
         onClick={(event) => {
           if (event.target === event.currentTarget) closeModal();
@@ -70,72 +75,100 @@ export default function DetailsModal({
             <X size={22} />
           </button>
 
-          <h2 id={`project-title-${project.id}`}>{project.name}</h2>
+          <h2 id={`${modalId}-title`}>{project.name}</h2>
           <p className="project-modal-note">{project.note}</p>
 
-          <div className="project-modal-gallery">
-            {images.map((image, index) => (
+          {variant === "certificate" ? (
+            <>
+              <p
+                id={`${modalId}-description`}
+                className="project-modal-description"
+              >
+                {project.description}
+              </p>
               <div
-                className="p-3 neumorphic-two"
-                key={`${project.id}-${image}-${index}`}
+                className={`certificate-modal-gallery${images.length === 1 ? " is-single" : images.length === 2 ? " is-pair" : ""}`}
               >
-                <img
-                  key={`${project.id}-${image}-${index}`}
-                  src={image}
-                  alt={`${project.name} preview ${index + 1}`}
-                />
+                {images.map((image, index) => (
+                  <div
+                    className="certificate-modal-image neumorphic-two"
+                    key={`${project.id}-${image}-${index}`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${project.name} certificate ${index + 1}`}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <>
+              <div className="project-modal-gallery">
+                {images.map((image, index) => (
+                  <div
+                    className="p-3 neumorphic-two"
+                    key={`${project.id}-${image}-${index}`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${project.name} preview ${index + 1}`}
+                    />
+                  </div>
+                ))}
+              </div>
+              <p
+                id={`${modalId}-description`}
+                className="project-modal-description mt-6"
+              >
+                {project.description}
+              </p>
+            </>
+          )}
 
-          <p
-            id={`project-description-${project.id}`}
-            className="project-modal-description"
-          >
-            {project.description}
-          </p>
+          {variant === "project" && (
+            <div className="project-modal-links">
+              {project.githubUrl ? (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="project-modal-link"
+                >
+                  <GitBranch size={18} />
+                  GitHub
+                </a>
+              ) : (
+                <span
+                  className="project-modal-link is-unavailable"
+                  aria-disabled="true"
+                >
+                  <GitBranch size={18} />
+                  GitHub
+                </span>
+              )}
 
-          <div className="project-modal-links">
-            {project.githubUrl ? (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="project-modal-link"
-              >
-                <GitBranch size={18} />
-                GitHub
-              </a>
-            ) : (
-              <span
-                className="project-modal-link is-unavailable"
-                aria-disabled="true"
-              >
-                <GitBranch size={18} />
-                GitHub
-              </span>
-            )}
-
-            {project.liveUrl ? (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="project-modal-link"
-              >
-                <ExternalLink size={18} />
-                Live Demo
-              </a>
-            ) : (
-              <span
-                className="project-modal-link is-unavailable"
-                aria-disabled="true"
-              >
-                <ExternalLink size={18} />
-                Live Demo
-              </span>
-            )}
-          </div>
+              {project.liveUrl ? (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="project-modal-link"
+                >
+                  <ExternalLink size={18} />
+                  Live Demo
+                </a>
+              ) : (
+                <span
+                  className="project-modal-link is-unavailable"
+                  aria-disabled="true"
+                >
+                  <ExternalLink size={18} />
+                  Live Demo
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </dialog>
     </>
