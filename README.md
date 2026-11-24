@@ -107,3 +107,8 @@ migration for rate limitation for feedback
 
 -checking .env.local is ignored by git to make sure keys are not public
 -production security headers in next.config.ts
+
+## preparing storage for images
+
+-create bucket at Supabase
+-assigning storage policies in Supabase query to ensure only authenticated admin edit images, although users can view cause bucket is public ( as in 0004_storage_security.sql in supabase\migration)
