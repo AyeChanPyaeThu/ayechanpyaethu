@@ -12,11 +12,13 @@ values (
   true,
   5242880,
   array[
-    'image/jpeg',
-    'image/png',
-    'image/webp',
-    'image/gif'
-  ]
+  'image/jpeg',
+  'image/jpg',
+  'image/jfif',
+  'image/png',
+  'image/webp',
+  'image/gif'
+]
 )
 on conflict (id) do update
 set
