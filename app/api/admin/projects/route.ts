@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ProjectImageRecord, ProjectRecord } from "@/lib/types/project";
 
 const PROJECT_COLUMNS =
@@ -248,9 +249,7 @@ function validateProjectFields(
 }
 
 async function attachProjectImages(
-  supabase: Awaited<ReturnType<typeof requireAdmin>> extends infer T
-    ? NonNullable<T>["supabase"]
-    : never,
+  supabase: SupabaseClient,
   projects: ProjectRecord[]
 ) {
   const projectIds = projects.map((project) => project.id);
