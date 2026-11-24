@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
                 message,
                 "",
                 "🌐 Sent from your portfolio website.",
-              ].join("\\n"),
+              ].join("\n"),
             }),
           }
         );
