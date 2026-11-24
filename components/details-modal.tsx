@@ -5,7 +5,7 @@ import { ExternalLink, GitBranch, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Project = {
-  id: number;
+  id: string | number;
   name: string;
   note: string;
   description: string;
