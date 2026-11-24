@@ -8,19 +8,13 @@ import {
   ChevronsRight,
   Handshake,
   BicepsFlexed,
-  Lightbulb,
-  BookOpenText,
-  SearchCode,
-  UserRoundGroup,
-  PencilSparkles,
-  TvMinimalPlay,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { interests } from "./data/interest";
 import ProjectsSection, { ProjectsSectionFallback } from "@/components/projects-section";
 import AchievementsSection, { AchievementsSectionFallback } from "@/components/achievements-section";
-import Why from "@/components/why";
+import InterestsSection, { InterestsSectionFallback } from "@/components/interests-section";
+import { getPublicInterests } from "@/lib/data/interests";
 
 export default function Home() {
   return (
@@ -209,100 +203,9 @@ export default function Home() {
         <AchievementsSection />
       </Suspense>
 
-      {/* Interests  */}
-      <div
-        className=" flex flex-col items-center justify-center mt-10 w-full text-black"
-        id="interests"
-      >
-        <h1 className="mb-5 text-center text-2xl sm:text-3xl lg:text-4xl">
-          My interests
-        </h1>
-
-        <nav
-          className="menu neumorphic-two grid grid-cols-2 md:grid-cols-3
-  xl:grid-cols-6 gap-4 sm:gap-6
-  w-full py-6 px-6 sm:px-6 md:px-10"
-        >
-          <div
-            className="menu-card w-full min-w-0
-  p-4 sm:p-5 rounded-2xl"
-          >
-            <p
-              className="flex items-center gap-2
-  text-lg sm:text-xl lg:text-2xl text-black"
-            >
-              <SearchCode size={38} strokeWidth={1.5} /> Learning
-            </p>
-
-            <Why interest={interests[0]} />
-          </div>
-
-          <div
-            className="menu-card w-full min-w-0
-  p-4 sm:p-5 rounded-2xl"
-          >
-            <p
-              className="flex items-center gap-2
-  text-lg sm:text-xl lg:text-2xl text-black"
-            >
-              <BookOpenText size={38} strokeWidth={1.5} /> Reading
-            </p>
-            <Why interest={interests[1]} />
-          </div>
-
-          <div
-            className="menu-card w-full min-w-0
-  p-4 sm:p-5 rounded-2xl"
-          >
-            <p
-              className="flex items-center gap-2
-  text-lg sm:text-xl lg:text-2xl text-black"
-            >
-              <UserRoundGroup size={38} strokeWidth={1.5} /> Discussing
-            </p>
-            <Why interest={interests[2]} />
-          </div>
-
-          <div
-            className="menu-card w-full min-w-0
-  p-4 sm:p-5 rounded-2xl"
-          >
-            <p
-              className="flex items-center gap-2
-  text-lg sm:text-xl lg:text-2xl text-black"
-            >
-              <Lightbulb size={38} strokeWidth={1.5} /> Problems
-            </p>
-            <Why interest={interests[3]} />
-          </div>
-
-          <div
-            className="menu-card w-full min-w-0
-  p-4 sm:p-5 rounded-2xl"
-          >
-            <p
-              className="flex items-center gap-2
-  text-lg sm:text-xl lg:text-2xl text-black"
-            >
-              <PencilSparkles size={38} strokeWidth={1.5} /> Drawing
-            </p>
-            <Why interest={interests[4]} />
-          </div>
-
-          <div
-            className="menu-card w-full min-w-0
-  p-4 sm:p-5 rounded-2xl"
-          >
-            <p
-              className="flex items-center gap-2
-  text-lg sm:text-xl lg:text-2xl text-black"
-            >
-              <TvMinimalPlay size={38} strokeWidth={1.5} /> Movies
-            </p>
-            <Why interest={interests[5]} />
-          </div>
-        </nav>
-      </div>
+      <Suspense fallback={<InterestsSectionFallback />}>
+        <InterestsSection interests={await getPublicInterests()} />
+      </Suspense>
     </div>
   );
 }
