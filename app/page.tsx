@@ -17,9 +17,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { certificates, projects } from "./data/projects";
+import { certificates } from "./data/projects";
 import { interests } from "./data/interest";
 import DetailsModal from "@/components/details-modal";
+import ProjectsSection, { ProjectsSectionFallback } from "@/components/projects-section";
 import Why from "@/components/why";
 
 export default function Home() {
@@ -112,81 +113,9 @@ export default function Home() {
         />
       </div>
 
-      {/* Projects */}
-      <div
-        className="w-full neumorphic-two inset-shadow flex items-center justify-center px-5"
-        id="#projects"
-      >
-        <div className="w-full px-3 sm:px-6 lg:px-12" id="projects">
-          <h1 className="my-6 sm:my-8 mon-exbold text-center text-2xl sm:text-3xl lg:text-4xl text-black">
-            Featured Projects
-          </h1>
-          <div className="flex flex-col items-end gap-5 mb-8 sm:mb-12">
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 ">
-              {projects.length <= 3 ? (
-                <>
-                  {projects.map((p) => (
-                    <div
-                      key={p.id}
-                      className="neumorphic-two rounded-2xl bg-white p-4 sm:p-5 lg:px-8 lg:py-6 hover:-translate-y-2 transition duration-300"
-                    >
-                      <img
-                        src={p.img}
-                        alt={p.name}
-                        className="h-40 sm:h-44 lg:h-48 w-full object-cover rounded-2xl"
-                      />
-                      <h3 className="mt-3 font-semibold text-orange-900">
-                        {p.name}
-                      </h3>
-                      <p className="text-black font-bold">{p.note}</p>
-                      <DetailsModal
-                        project={p}
-                        triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600"
-                      />
-                    </div>
-                  ))}{" "}
-                </>
-              ) : (
-                <>
-                  {projects.slice(0, 3).map((p) => (
-                    <div
-                      key={p.id}
-                      className="neumorphic-two rounded-2xl
-  bg-white p-4 sm:p-5 lg:px-8 lg:py-6
-  hover:-translate-y-2 transition duration-300"
-                    >
-                      <img
-                        src={p.img}
-                        alt={p.name}
-                        className="h-40 sm:h-44 lg:h-48 w-full
-  object-cover rounded-2xl"
-                      />
-                      <h3 className="mt-3 font-semibold text-orange-900">
-                        {p.name}
-                      </h3>
-                      <p className="text-orange-700 font-bold">{p.note}</p>
-                      <DetailsModal
-                        project={p}
-                        triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600"
-                      />
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-            <Link
-              href="/list#projects"
-              className="text-black text-xl w-full flex items-center justify-center"
-            >
-              More{" "}
-              <ChevronsRight
-                className="inline-block m-0 md:ml-2 text-amber-900 "
-                size={34}
-              />
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Suspense fallback={<ProjectsSectionFallback />}>
+        <ProjectsSection />
+      </Suspense>
 
       <Suspense
         fallback={
