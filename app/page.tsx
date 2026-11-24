@@ -50,8 +50,8 @@ export default function Home() {
             Hello, World! I'm
           </h1>
 
-          <Suspense fallback={<ProfileIntroFallback />}>
-            <ProfileIntro />
+          <Suspense fallback={<ProfileIntroFallback variant="home" />}>
+            <ProfileIntro variant="home" />
           </Suspense>
 
           <div className=" flex flex-wrap gap-3 sm:gap-4 mb-7">
@@ -380,8 +380,8 @@ export default function Home() {
             Hello, World! I'm
           </h1>
 
-          <Suspense fallback={<ProfileIntroFallback />}>
-            <ProfileIntro />
+          <Suspense fallback={<ProfileIntroFallback variant="about" />}>
+            <ProfileIntro variant="about" />
           </Suspense>
 
           <div className=" flex flex-wrap gap-3 sm:gap-4 mb-7">
