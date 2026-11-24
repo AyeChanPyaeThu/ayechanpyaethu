@@ -8,7 +8,7 @@ import {
   UserRoundGroup,
 } from "lucide-react";
 import Why from "@/components/why";
-import type { Interest } from "@/lib/types/interest";
+import { getPublicInterests } from "@/lib/data/interests";
 
 const interestIcons = {
   SearchCode,
@@ -28,7 +28,9 @@ function InterestIcon({ icon }: { icon: string | null }) {
   return <Icon size={38} strokeWidth={1.5} />;
 }
 
-export default function InterestsSection({ interests }: { interests: Interest[] }) {
+export default async function InterestsSection() {
+  const interests = await getPublicInterests();
+
   return (
     <section
       className="flex flex-col items-center justify-center mt-10 w-full text-black"
