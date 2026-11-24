@@ -15,17 +15,7 @@ export async function getPublicSkills(): Promise<Skill[]> {
   const { data, error } = await supabase
     .from("skills")
     .select(
-      [
-        "id",
-        "name",
-        "category",
-        "description",
-        "proficiency_label",
-        "sort_order",
-        "is_published",
-        "created_at",
-        "updated_at",
-      ].join(", ")
+      "id, name, category, description, proficiency_label, sort_order, is_published, created_at, updated_at"
     )
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
@@ -35,5 +25,5 @@ export async function getPublicSkills(): Promise<Skill[]> {
     return [];
   }
 
-  return (data as Skill[] | null) ?? [];
+  return data ?? [];
 }
