@@ -62,7 +62,7 @@ export default function Home() {
 
           <div className="flex flex-wrap gap-3 sm:gap-4 items-center mb-4">
             <p className="">Let's connect!</p>
-            <Link href="/">
+            <Link href="#discord">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -72,7 +72,7 @@ export default function Home() {
               </svg>
             </Link>
 
-            <Link href="/">
+            <Link href="#telegram">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -82,7 +82,7 @@ export default function Home() {
               </svg>
             </Link>
 
-            <Link href="/">
+            <Link href="#viber">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -92,7 +92,7 @@ export default function Home() {
               </svg>
             </Link>
 
-            <Link href="/">
+            <Link href="#email">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -137,13 +137,11 @@ export default function Home() {
       >
         <img
           className=" w-full max-w-70 sm:max-w-sm md:max-w-full md:col-span-2 mx-auto sm:p-6 lg:p-10 object-cover rounded-2xl shadow-lg "
-          src="/profile/pf9.jfif"
+          src="/profile/pf.jpg"
           alt="Profile Image"
         />
         <div className="flex flex-col col-span-1 md:col-span-3 items-start justify-center text-black w-full ">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">
-            Hello, World! I'm
-          </h1>
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Hi! I'm</h1>
 
           <Suspense fallback={<ProfileIntroFallback variant="about" />}>
             <ProfileIntro variant="about" />
@@ -160,7 +158,7 @@ export default function Home() {
 
           <div className="flex flex-wrap gap-3 sm:gap-4 items-center mb-4">
             <p className="">Let's connect!</p>
-            <Link href="/">
+            <Link href="#discord">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -170,7 +168,7 @@ export default function Home() {
               </svg>
             </Link>
 
-            <Link href="/">
+            <Link href="#telegram">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -180,7 +178,7 @@ export default function Home() {
               </svg>
             </Link>
 
-            <Link href="/">
+            <Link href="#viber">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"
@@ -190,7 +188,7 @@ export default function Home() {
               </svg>
             </Link>
 
-            <Link href="/">
+            <Link href="#email">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 640"

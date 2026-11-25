@@ -14,9 +14,7 @@ type ProfileIntroProps = {
   variant?: "home" | "about";
 };
 
-export function ProfileIntroFallback({
-  variant = "home",
-}: ProfileIntroProps) {
+export function ProfileIntroFallback({ variant = "home" }: ProfileIntroProps) {
   return (
     <>
       <span
@@ -61,7 +59,7 @@ export default async function ProfileIntro({
 
       <p
         className="text-sm sm:text-base lg:text-lg
-  mb-5 max-w-xl leading-relaxed whitespace-pre-line"
+  mb-5 max-w-xl leading-normal whitespace-pre-line"
       >
         {description}
       </p>

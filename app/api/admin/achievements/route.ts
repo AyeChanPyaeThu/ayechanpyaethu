@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { AchievementRecord } from "@/lib/types/achievement";
 
 const ACHIEVEMENT_COLUMNS =
@@ -66,6 +67,70 @@ function isValidUrlOrPath(value: string): boolean {
     return url.protocol === "https:" || url.protocol === "http:";
   } catch {
     return false;
+  }
+}
+
+async function removeAchievementStorageImages(
+  achievementId: string,
+  imageUrls: string[],
+) {
+  const storageAdmin = createAdminClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!supabaseUrl) {
+    console.error("Supabase URL is missing; image cleanup skipped.");
+    return;
+  }
+
+  const baseUrl = new URL(supabaseUrl);
+
+  const expectedPrefix =
+    `${baseUrl.pathname.replace(/\/$/, "")}` +
+    `/storage/v1/object/public/portfolio-media/achievements/${achievementId}/`;
+
+  const paths = [
+    ...new Set(
+      imageUrls.flatMap((imageUrl) => {
+        try {
+          const parsedUrl = new URL(imageUrl);
+
+          if (
+            parsedUrl.origin !== baseUrl.origin ||
+            !parsedUrl.pathname.startsWith(expectedPrefix)
+          ) {
+            return [];
+          }
+
+          const filename = decodeURIComponent(
+            parsedUrl.pathname.slice(expectedPrefix.length),
+          );
+
+          if (
+            !filename ||
+            filename.includes("/") ||
+            filename === "." ||
+            filename === ".." ||
+            /[\\\u0000-\u001F]/.test(filename)
+          ) {
+            return [];
+          }
+
+          return [`achievements/${achievementId}/${filename}`];
+        } catch {
+          return [];
+        }
+      }),
+    ),
+  ];
+
+  if (paths.length === 0) return;
+
+  const { error } = await storageAdmin.storage
+    .from("portfolio-media")
+    .remove(paths);
+
+  if (error) {
+    console.error("Unable to remove old achievement images:", error);
   }
 }
 
@@ -140,11 +205,11 @@ function validateAchievementFields(
     }
   }
 
-  if ("image_urls" in body) {
-    if (
-      !Array.isArray(body.image_urls) ||
-      body.image_urls.length > 30 ||
-      !body.image_urls.every(
+    if ("image_urls" in body) {
+      if (
+        !Array.isArray(body.image_urls) ||
+        body.image_urls.length > 30 ||
+        !body.image_urls.every(
         (url) =>
           typeof url === "string" &&
           url.length <= 2048 &&
@@ -153,6 +218,7 @@ function validateAchievementFields(
     ) {
       return { valid: false, values };
     }
+
     values.image_urls = body.image_urls.map((url) => url.trim());
   } else if (!partial) {
     values.image_urls = [];
@@ -325,6 +391,35 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
+  const { data: existingAchievement, error: existingAchievementError } =
+    await admin.supabase
+      .from("achievements")
+      .select("id, image_url, image_urls")
+      .eq("id", body.id)
+      .maybeSingle();
+
+  if (existingAchievementError) {
+    console.error("Unable to check existing achievement:", existingAchievementError);
+    return NextResponse.json(
+      { success: false, error: "Unable to validate the existing achievement." },
+      { status: 500 }
+    );
+  }
+
+  if (!existingAchievement) {
+    return NextResponse.json(
+      { success: false, error: "Achievement not found." },
+      { status: 404 }
+    );
+  }
+
+  const oldImageUrls = [
+    existingAchievement.image_url,
+    ...(existingAchievement.image_urls ?? []),
+  ].filter(
+    (url): url is string => typeof url === "string" && url.length > 0
+  );
+
   const { data, error } = await admin.supabase
     .from("achievements")
     .update(validation.values)
@@ -346,6 +441,22 @@ export async function PATCH(request: NextRequest) {
       { status: 404 }
     );
   }
+
+  const currentImageUrls = [
+    data.image_url,
+    ...(data.image_urls ?? []),
+  ].filter(
+    (url): url is string => typeof url === "string" && url.length > 0
+  );
+
+  const unusedImageUrls = oldImageUrls.filter(
+    (url) => !currentImageUrls.includes(url)
+  );
+
+  await removeAchievementStorageImages(
+    body.id,
+    unusedImageUrls
+  );
 
   return NextResponse.json({
     success: true,
@@ -382,6 +493,35 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
+  const { data: achievement, error: achievementError } =
+    await admin.supabase
+      .from("achievements")
+      .select("id, image_url, image_urls")
+      .eq("id", body.id)
+      .maybeSingle();
+
+  if (achievementError) {
+    console.error("Unable to retrieve achievement images:", achievementError);
+    return NextResponse.json(
+      { success: false, error: "Unable to retrieve achievement images." },
+      { status: 500 }
+    );
+  }
+
+  if (!achievement) {
+    return NextResponse.json(
+      { success: false, error: "Achievement not found." },
+      { status: 404 }
+    );
+  }
+
+  const imageUrls = [
+    achievement.image_url,
+    ...(achievement.image_urls ?? []),
+  ].filter(
+    (url): url is string => typeof url === "string" && url.length > 0
+  );
+
   const { data, error } = await admin.supabase
     .from("achievements")
     .delete()
@@ -403,6 +543,11 @@ export async function DELETE(request: NextRequest) {
       { status: 404 }
     );
   }
+
+  await removeAchievementStorageImages(
+    body.id,
+    imageUrls
+  );
 
   return NextResponse.json({
     success: true,

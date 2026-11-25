@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import AdminLogoutButton from "@/components/admin/admin-logout-button";
+import AdminSidebar from "@/components/admin/admin-sidebar";
 
 async function ProtectedAdminContent({ children }: { children: ReactNode }) {
   await connection();
@@ -44,7 +45,11 @@ async function ProtectedAdminContent({ children }: { children: ReactNode }) {
         <AdminLogoutButton />
       </header>
 
-      {children}
+      <div className="flex min-h-[calc(100vh-73px)] flex-col bg-[#e9eaf0] md:flex-row">
+        <AdminSidebar />
+
+        <main className="min-w-0 flex-1">{children}</main>
+      </div>
     </div>
   );
 }

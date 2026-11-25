@@ -17,7 +17,7 @@ type Project = {
 
 type DetailsModalProps = {
   project: Project;
-  variant?: "project" | "certificate";
+  variant?: "project" | "certificate" | "achievement";
   triggerClassName?: string;
 };
 
@@ -30,7 +30,7 @@ export default function DetailsModal({
   const modalId = `${variant}-${project.id}`;
 
   const images =
-    variant === "certificate"
+    variant === "certificate" || variant === "achievement"
       ? (project.images ?? [])
       : [project.img, ...(project.images ?? [])].slice(0, 3);
 
@@ -76,7 +76,7 @@ export default function DetailsModal({
           <h2 id={`${modalId}-title`}>{project.name}</h2>
           <p className="project-modal-note">{project.note}</p>
 
-          {variant === "certificate" ? (
+          {variant === "achievement" ? (
             <>
               <p
                 id={`${modalId}-description`}
@@ -84,6 +84,33 @@ export default function DetailsModal({
               >
                 {project.description}
               </p>
+
+              <div
+                className={`achievement-bento-gallery achievement-bento-count-${Math.min(images.length, 4)}`}
+              >
+                {images.map((image, index) => (
+                  <div
+                    className={`achievement-bento-item achievement-bento-item-${index + 1}`}
+                    key={`${project.id}-${image}-${index}`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${project.name} achievement image ${index + 1}`}
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : variant === "certificate" ? (
+            <>
+              <p
+                id={`${modalId}-description`}
+                className="project-modal-description"
+              >
+                {project.description}
+              </p>
+
               <div
                 className={`certificate-modal-gallery${images.length === 1 ? " is-single" : images.length === 2 ? " is-pair" : ""}`}
               >
@@ -115,6 +142,7 @@ export default function DetailsModal({
                   </div>
                 ))}
               </div>
+
               <p
                 id={`${modalId}-description`}
                 className="project-modal-description mt-6"

@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
@@ -164,23 +166,66 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-12">
-      <section className="w-full max-w-md rounded-2xl border border-black/10 p-8 shadow-sm">
-        <p className="mb-2 text-sm font-medium text-gray-500">Private area</p>
+    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-[#e3e4e9] px-4 py-6 text-slate-900 sm:px-6 sm:py-8">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-32 -top-32 size-80 rounded-full bg-amber-300/20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-40 -right-32 size-96 rounded-full bg-orange-200/30 blur-3xl"
+      />
 
-        <h1 className="text-2xl font-semibold">Administrator sign in</h1>
+      <section className="relative w-full max-w-[460px] rounded-[2rem] border border-white/70 bg-[#e3e4e9]/90 p-6 shadow-[12px_12px_28px_#c8c9ce,-12px_-12px_28px_#ffffff] backdrop-blur-xl sm:p-8">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-amber-900 text-amber-50 shadow-[4px_4px_10px_rgba(120,53,15,0.2)]">
+            <ShieldCheck aria-hidden="true" size={25} strokeWidth={1.8} />
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-800">
+              Secure access
+            </p>
+            <p className="mt-1 font-mon text-sm font-semibold text-slate-800">
+              Aye Chan Pyae Thu
+            </p>
+          </div>
+        </div>
 
-        <p className="mt-2 text-sm text-gray-600">
-          {step === "password"
-            ? "Sign in with your administrator account."
-            : "Enter the six-digit code from Google Authenticator."}
-        </p>
+        <div className="mb-6">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-900/10 bg-amber-50/80 px-3 py-1.5 text-xs font-semibold text-amber-900">
+            <LockKeyhole aria-hidden="true" size={14} />
+            {step === "password" ? "ADMINISTRATOR PORTAL" : "TWO-STEP VERIFICATION"}
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            {step === "password" ? "Welcome back" : "Verify it’s you"}
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            {step === "password"
+              ? "Sign in with your administrator account to manage your portfolio."
+              : "Enter the six-digit code from your authenticator app to continue."}
+          </p>
+        </div>
+
+        <div className="mb-5 flex items-center gap-3" aria-label="Sign-in progress">
+          <div className="h-1.5 flex-1 rounded-full bg-amber-800" />
+          <div
+            className={`h-1.5 flex-1 rounded-full ${
+              step === "mfa" ? "bg-amber-800" : "bg-slate-300"
+            }`}
+          />
+          <span className="shrink-0 text-xs font-medium text-slate-500">
+            {step === "password" ? "Step 1 of 2" : "Step 2 of 2"}
+          </span>
+        </div>
 
         {step === "password" ? (
-          <form onSubmit={handlePasswordSubmit} className="mt-8 space-y-5">
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-medium">
-                Email
+              <label
+                htmlFor="email"
+                className="mb-1.5 block text-sm font-semibold text-slate-700"
+              >
+                Email address
               </label>
               <input
                 id="email"
@@ -189,14 +234,15 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-gray-500"
+                placeholder="you@example.com"
+                className="w-full rounded-xl border border-white/80 bg-[#e3e4e9] px-4 py-3 text-sm text-slate-900 shadow-[inset_4px_4px_8px_#c8c9ce,inset_-4px_-4px_8px_#ffffff] outline-none transition placeholder:text-slate-400 focus:border-amber-700/40 focus:ring-4 focus:ring-amber-700/10"
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="mb-2 block text-sm font-medium"
+                className="mb-1.5 block text-sm font-semibold text-slate-700"
               >
                 Password
               </label>
@@ -207,12 +253,16 @@ export default function AdminLoginPage() {
                 required
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-gray-500"
+                placeholder="Enter your password"
+                className="w-full rounded-xl border border-white/80 bg-[#e3e4e9] px-4 py-3 text-sm text-slate-900 shadow-[inset_4px_4px_8px_#c8c9ce,inset_-4px_-4px_8px_#ffffff] outline-none transition placeholder:text-slate-400 focus:border-amber-700/40 focus:ring-4 focus:ring-amber-700/10"
               />
             </div>
 
             {errorMessage ? (
-              <p role="alert" className="text-sm text-red-600">
+              <p
+                role="alert"
+                className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-5 text-rose-700"
+              >
                 {errorMessage}
               </p>
             ) : null}
@@ -220,49 +270,54 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-lg bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(120,53,15,0.2)] transition hover:-translate-y-0.5 hover:bg-amber-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Signing in..." : "Continue"}
+              {isSubmitting ? "Signing in..." : "Continue securely"}
+              {!isSubmitting ? <ArrowRight aria-hidden="true" size={17} /> : null}
             </button>
           </form>
         ) : (
-          <form onSubmit={handleMfaSubmit} className="mt-8 space-y-5">
+          <form onSubmit={handleMfaSubmit} className="space-y-4">
             {qrCode ? (
-              <div className="space-y-3 text-center">
-                <h2 className="text-lg font-semibold">
-                  Set up Google Authenticator
+              <div className="space-y-3 rounded-2xl border border-white/80 bg-white/50 p-4 text-center">
+                <h2 className="text-base font-semibold text-slate-800">
+                  Set up your authenticator
                 </h2>
-
-                <p className="text-sm text-gray-600">
+                <p className="text-sm leading-5 text-slate-600">
                   Scan this QR code using Google Authenticator.
                 </p>
-
-                <img
-                  src={qrCode}
-                  alt="Authenticator enrollment QR code"
-                  className="mx-auto h-48 w-48"
-                />
-
+                <div className="mx-auto flex size-52 items-center justify-center rounded-xl bg-white p-2 shadow-sm">
+                  <img
+                    src={qrCode}
+                    alt="Authenticator enrollment QR code"
+                    className="size-full object-contain"
+                  />
+                </div>
                 <details className="text-left">
-                  <summary className="cursor-pointer text-sm font-medium">
-                    Can't scan the QR code?
+                  <summary className="cursor-pointer text-sm font-medium text-amber-900 underline decoration-amber-900/30 underline-offset-4">
+                    Can’t scan the QR code?
                   </summary>
-                  <p className="mt-2 break-all text-sm text-gray-600">
+                  <p className="mt-2 break-all rounded-lg bg-white/70 p-3 font-mono text-xs leading-5 text-slate-600">
                     {totpSecret}
                   </p>
                 </details>
               </div>
             ) : (
-              <div>
-                <h2 className="text-lg font-semibold">Verify your identity</h2>
-                <p className="text-sm text-gray-600">
-                  Enter the current code from Google Authenticator.
+              <div className="rounded-2xl border border-amber-900/10 bg-amber-50/70 p-4">
+                <h2 className="text-base font-semibold text-slate-800">
+                  Verify your identity
+                </h2>
+                <p className="mt-1 text-sm leading-5 text-slate-600">
+                  Enter the current code from your authenticator app.
                 </p>
               </div>
             )}
 
             <div>
-              <label htmlFor="code" className="mb-2 block text-sm font-medium">
+              <label
+                htmlFor="code"
+                className="mb-1.5 block text-sm font-semibold text-slate-700"
+              >
                 Authentication code
               </label>
               <input
@@ -276,12 +331,15 @@ export default function AdminLoginPage() {
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
                 placeholder="000000"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-center text-xl tracking-[0.4em] outline-none focus:border-gray-500"
+                className="w-full rounded-xl border border-white/80 bg-[#e3e4e9] px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-slate-900 shadow-[inset_4px_4px_8px_#c8c9ce,inset_-4px_-4px_8px_#ffffff] outline-none transition placeholder:text-slate-400 focus:border-amber-700/40 focus:ring-4 focus:ring-amber-700/10"
               />
             </div>
 
             {errorMessage ? (
-              <p role="alert" className="text-sm text-red-600">
+              <p
+                role="alert"
+                className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-5 text-rose-700"
+              >
                 {errorMessage}
               </p>
             ) : null}
@@ -289,12 +347,26 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isSubmitting || code.length !== 6}
-              className="w-full rounded-lg bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(120,53,15,0.2)] transition hover:-translate-y-0.5 hover:bg-amber-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? "Verifying..." : "Verify and sign in"}
+              {!isSubmitting ? <ArrowRight aria-hidden="true" size={17} /> : null}
             </button>
           </form>
         )}
+
+        <div className="mt-6 border-t border-slate-300/70 pt-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-amber-900 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-800"
+          >
+            <ArrowLeft aria-hidden="true" size={16} />
+            Back to portfolio
+          </Link>
+          <p className="mt-3 text-xs leading-5 text-slate-400">
+            Protected area · Authorized administrators only
+          </p>
+        </div>
       </section>
     </main>
   );

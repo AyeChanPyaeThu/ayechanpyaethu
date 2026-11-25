@@ -13,7 +13,7 @@ export default async function AchievementsSection() {
     >
       <div className="w-full px-3 sm:px-6 lg:px-12">
         <h1 className="my-6 sm:my-8 mon-exbold text-center text-2xl sm:text-3xl lg:text-4xl text-black">
-          Achievements
+          Collection of Milestones
         </h1>
 
         <div className="flex flex-col items-end gap-5 mb-8 sm:mb-12 px-5 md:px-7">

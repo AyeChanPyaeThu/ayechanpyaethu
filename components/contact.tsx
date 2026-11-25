@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, MapPin, PhoneCall, Send } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, Mail, MapPin, PhoneCall, Send } from "lucide-react";
 import { Button } from "./ui/button";
 import React from "react";
 
@@ -12,6 +12,13 @@ export default function Contact() {
 
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!status) return;
+
+    const timeoutId = window.setTimeout(() => setStatus(""), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [status]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +66,7 @@ export default function Contact() {
         {/* Left: Social media and contact */}
         <div className="flex flex-col gap-4 w-full justify-center items-start text-sm sm:text-base lg:text-lg text-black">
           {/* Discord */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0" id="discord">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 640 640"
@@ -72,7 +79,7 @@ export default function Contact() {
           </div>
 
           {/* Viber */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0" id="viber">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 640 640"
@@ -85,26 +92,29 @@ export default function Contact() {
           </div>
 
           {/* Location */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" id="location">
             <MapPin className="shrink-0 text-amber-900" size={26} />
             <span>Mandalay, Myanmar</span>
           </div>
 
           {/* Phone */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" id="phone">
             <PhoneCall className="shrink-0 text-amber-900" size={24} />
             <span>+959965468651</span>
           </div>
 
           {/* Email */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0" id="email">
             <Mail className="shrink-0 text-amber-900" size={24} />
             <span className="break-all">ayechanpyaethu.it@gmail.com</span>
           </div>
         </div>
 
         {/* Right: Contact invitation */}
-        <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left space-y-2 text-base sm:text-lg text-black w-full">
+        <div
+          id="telegram"
+          className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left space-y-2 text-base sm:text-lg text-black w-full"
+        >
           <p>Lets Create</p>
           <p>Something Amazing Together!</p>
 
@@ -141,7 +151,10 @@ export default function Contact() {
             </Button>
 
             {status && (
-              <p role="status" className="text-sm text-center mt-2">
+              <p
+                role="status"
+                className="text-sm text-center mt-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
+              >
                 {status}
               </p>
             )}
@@ -150,8 +163,17 @@ export default function Contact() {
       </div>
 
       {/* Copyright */}
-      <div className="w-full text-center text-sm sm:text-md mon-exbold mt-6 text-amber-900 font-semibold">
+      <div className="w-full text-center text-lg mon-exbold mt-3 text-amber-900 font-semibold">
         © 2026 Aye Chan Pyae Thu
+      </div>
+
+      <div className="w-full flex justify-end mt-1">
+        <a
+          href="/admin/login"
+          className="flex items-center text-lg underline text-amber-900/50 hover:text-amber-900/80 transition-colors"
+        >
+          Admin <ArrowUpRight size={20} />
+        </a>
       </div>
     </div>
   );

@@ -2,16 +2,13 @@
 
 import { useEffect, useState } from "react";
 import {
-  LayoutDashboard,
-  UserRound,
-  Code2,
   FolderKanban,
+  Code2,
   Award,
   Heart,
   MessageSquare,
-  Settings,
+  UserRound,
   RefreshCw,
-  Menu,
 } from "lucide-react";
 
 type OverviewData = {
@@ -37,22 +34,10 @@ type OverviewData = {
   }[];
 };
 
-const navigation = [
-  { label: "Overview", icon: LayoutDashboard, active: true },
-  { label: "Profile", icon: UserRound },
-  { label: "Skills", icon: Code2 },
-  { label: "Projects", icon: FolderKanban },
-  { label: "Achievements", icon: Award },
-  { label: "Interests", icon: Heart },
-  { label: "Messages", icon: MessageSquare },
-  { label: "Settings", icon: Settings },
-];
-
 export default function AdminOverview() {
   const [data, setData] = useState<OverviewData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   async function loadOverview() {
     setLoading(true);
@@ -122,60 +107,11 @@ export default function AdminOverview() {
     : [];
 
   return (
-    <div className="flex min-h-[calc(100vh-73px)] bg-[#e9eaf0] text-slate-800">
-      <aside
-        className={`fixed inset-y-0 left-0 z-30 mt-18.25 w-64 border-r border-white/70 bg-[#e9eaf0] p-5 transition-transform md:static md:mt-0 md:translate-x-0 ${
-          menuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <p className="mb-5 px-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
-          Workspace
-        </p>
-
-        <nav className="space-y-2">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.label}
-                className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm ${
-                  item.active
-                    ? "bg-white font-semibold text-blue-700 shadow-[4px_4px_10px_#c8c9cf,-4px_-4px_10px_#ffffff]"
-                    : "text-slate-500"
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <Icon size={18} />
-                  {item.label}
-                </span>
-                {!item.active && (
-                  <span className="text-[10px] text-slate-400">Soon</span>
-                )}
-              </div>
-            );
-          })}
-        </nav>
-      </aside>
-
-      {menuOpen && (
-        <button
-          aria-label="Close navigation"
-          className="fixed inset-0 z-20 bg-black/20 md:hidden"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-
-      <main className="min-w-0 flex-1 p-5 sm:p-8">
+    <div className="min-h-[calc(100vh-73px)] bg-[#e9eaf0] text-slate-800">
+      <div className="min-w-0 flex-1 p-5 sm:p-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <button
-                className="rounded-xl bg-white p-2 shadow md:hidden"
-                onClick={() => setMenuOpen(!menuOpen)}
-                aria-label="Toggle navigation"
-              >
-                <Menu size={20} />
-              </button>
               <div>
                 <p className="text-sm text-slate-500">Workspace / Overview</p>
                 <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
@@ -287,7 +223,7 @@ export default function AdminOverview() {
             )}
           </section>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

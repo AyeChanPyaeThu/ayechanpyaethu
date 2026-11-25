@@ -100,7 +100,7 @@ export default function Why({ interest, triggerClassName }: WhyProps) {
 
           {/* DESCRIPTION */}
           <div className="interest-modal-content">
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-5 items-center font-extrabold">
               <div> {renderIcon(interest)}</div>
               <div>
                 <span className="interest-modal-label">MY INTEREST</span>
@@ -109,7 +109,10 @@ export default function Why({ interest, triggerClassName }: WhyProps) {
               </div>
             </div>
 
-            <p id={`interest-description-${interest.id}`}>
+            <p
+              id={`interest-description-${interest.id}`}
+              className="text-extrabold"
+            >
               {interest.description}
             </p>
 

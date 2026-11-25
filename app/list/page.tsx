@@ -30,7 +30,7 @@ export default function List() {
         id="achievements"
       >
         <h1 className="my-8 mon-exbold text-center underline text-3xl sm:text-4xl text-black">
-          Achievements
+          Collection of Milestones
         </h1>
 
         <Suspense fallback={<AchievementsListSectionFallback />}>

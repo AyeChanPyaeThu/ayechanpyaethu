@@ -36,7 +36,7 @@ export default async function AchievementsListSection() {
 
                 <DetailsModal
                   project={achievement}
-                  variant="certificate"
+                  variant="achievement"
                   triggerClassName="mt-5 w-full py-2 rounded-3xl text-white bg-amber-800 hover:cursor-pointer hover:bg-amber-600 transition"
                 />
               </div>

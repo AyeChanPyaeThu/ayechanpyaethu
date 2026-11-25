@@ -7,10 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-mon: var(--font-montserrat-alternates);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,7 +51,37 @@
 
 :root {
   --background: #e3e4e9;
-  --foreground: #e3e4e9;
+  --foreground: #171717;
+  --card: #e3e4e9;
+  --card-foreground: #171717;
+  --popover: #e3e4e9;
+  --popover-foreground: #171717;
+  --primary: #171717;
+  --primary-foreground: #ffffff;
+  --secondary: #d7d8dd;
+  --secondary-foreground: #171717;
+  --muted: #d4d5da;
+  --muted-foreground: #52525b;
+  --accent: #d9dae0;
+  --accent-foreground: #171717;
+  --destructive: #ef4444;
+  --border: #c7c8cd;
+  --input: #c7c8cd;
+  --ring: #71717a;
+  --radius: 0.625rem;
+  --sidebar: #e3e4e9;
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #171717;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d9dae0;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #c7c8cd;
+  --sidebar-ring: #71717a;
+  --chart-1: #71717a;
+  --chart-2: #3f3f46;
+  --chart-3: #a1a1aa;
+  --chart-4: #52525b;
+  --chart-5: #d4d4d8;
 }
 
 @layer base {
@@ -445,6 +475,118 @@ body::-webkit-scrollbar,
   max-height: min(60vh, 480px);
   border-radius: 12px;
   object-fit: contain;
+}
+
+/* =====================================
+   ACHIEVEMENT MODAL - BENTO GALLERY
+===================================== */
+
+.achievement-bento-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(180px, auto);
+  gap: 16px;
+  width: 100%;
+  margin-top: 24px;
+  align-items: stretch;
+}
+
+.achievement-bento-item {
+  min-width: 0;
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #e3e4e9;
+  box-shadow:
+    inset 4px 4px 9px #c8c9ce,
+    inset -4px -4px 9px #ffffff;
+  transition:
+    transform 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.achievement-bento-item:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    7px 7px 14px #c8c9ce,
+    -7px -7px 14px #ffffff;
+}
+
+.achievement-bento-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  border-radius: 14px;
+}
+
+/* One image */
+.achievement-bento-count-1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.achievement-bento-count-1 .achievement-bento-item {
+  width: 100%;
+  max-width: 760px;
+  min-height: 220px;
+  max-height: 560px;
+  margin-inline: auto;
+}
+
+/* Two images */
+.achievement-bento-count-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Three images */
+.achievement-bento-count-3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.achievement-bento-count-3 .achievement-bento-item-1 {
+  grid-row: span 2;
+}
+
+/* Four or more images */
+.achievement-bento-count-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.achievement-bento-count-4 .achievement-bento-item:first-child {
+  grid-column: span 2;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .achievement-bento-gallery {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    gap: 12px;
+  }
+
+  .achievement-bento-item,
+  .achievement-bento-count-1 .achievement-bento-item {
+    width: 100%;
+    min-height: 140px;
+    max-height: none;
+    padding: 10px;
+  }
+
+  .achievement-bento-item img {
+    height: auto;
+    max-height: 420px;
+  }
+
+  .achievement-bento-count-3 .achievement-bento-item-1,
+  .achievement-bento-count-4 .achievement-bento-item:first-child {
+    grid-column: auto;
+    grid-row: auto;
+  }
 }
 
 .project-modal-description {
