@@ -32,9 +32,7 @@ export default function DetailsModal({
   const images =
     variant === "certificate"
       ? (project.images ?? [])
-      : project.images && project.images.length >= 3
-        ? project.images.slice(0, 3)
-        : [project.img, project.img, project.img];
+      : [project.img, ...(project.images ?? [])].slice(0, 3);
 
   function openModal() {
     dialogRef.current?.showModal();

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ProjectImageRecord, ProjectRecord } from "@/lib/types/project";
 
@@ -97,8 +98,7 @@ function isValidUrlOrPath(value: string): boolean {
 }
 
 function validateImages(value: unknown): ProjectImageInput[] | null {
-  if (!Array.isArray(value) || value.length > 30) return null;
-
+    if (!Array.isArray(value) || value.length > 3) return null;
   const images: ProjectImageInput[] = [];
 
   for (let index = 0; index < value.length; index += 1) {
@@ -179,18 +179,27 @@ function validateProjectFields(
     ["role", 200],
   ] as const;
 
-  for (const [field, maxLength] of textFields) {
-    if (field in body) {
-      if (typeof body[field] !== "string" || body[field].length > maxLength) {
-        return { valid: false, values };
-      }
-      values[field] = (body[field] as string).trim();
-    } else if (!partial && field !== "role") {
-      values[field] = "";
-    } else if (!partial && field === "role") {
+ for (const [field, maxLength] of textFields) {
+  if (field in body) {
+    if (field === "role" && body[field] === null) {
       values[field] = null;
+      continue;
     }
+
+    if (
+      typeof body[field] !== "string" ||
+      body[field].length > maxLength
+    ) {
+      return { valid: false, values };
+    }
+
+    values[field] = (body[field] as string).trim();
+  } else if (!partial && field !== "role") {
+    values[field] = "";
+  } else if (!partial && field === "role") {
+    values[field] = null;
   }
+}
 
   if ("technologies" in body) {
     if (
@@ -269,11 +278,13 @@ function validateProjectFields(
     values.sort_order = 0;
   }
 
-  let images: ProjectImageInput[] | undefined;
+    let images: ProjectImageInput[] | undefined;
   if ("images" in body) {
     images = validateImages(body.images) ?? undefined;
     if (!images) return { valid: false, values };
   }
+
+  
 
   return { valid: true, values, images };
 }
@@ -304,6 +315,70 @@ async function attachProjectImages(
     ...project,
     images: imagesByProject.get(project.id) ?? [],
   }));
+}
+
+async function removeProjectStorageImages(
+  projectId: string,
+  imageUrls: string[],
+) {
+  const storageAdmin = createAdminClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!supabaseUrl) {
+    console.error("Supabase URL is missing; image cleanup skipped.");
+    return;
+  }
+
+  const baseUrl = new URL(supabaseUrl);
+
+  const expectedPrefix =
+    `${baseUrl.pathname.replace(/\/$/, "")}` +
+    `/storage/v1/object/public/portfolio-media/projects/${projectId}/`;
+
+  const paths = [
+    ...new Set(
+      imageUrls.flatMap((imageUrl) => {
+        try {
+          const parsedUrl = new URL(imageUrl);
+
+          if (
+            parsedUrl.origin !== baseUrl.origin ||
+            !parsedUrl.pathname.startsWith(expectedPrefix)
+          ) {
+            return [];
+          }
+
+          const filename = decodeURIComponent(
+            parsedUrl.pathname.slice(expectedPrefix.length),
+          );
+
+          if (
+            !filename ||
+            filename.includes("/") ||
+            filename === "." ||
+            filename === ".." ||
+            /[\\\u0000-\u001F]/.test(filename)
+          ) {
+            return [];
+          }
+
+          return [`projects/${projectId}/${filename}`];
+        } catch {
+          return [];
+        }
+      }),
+    ),
+  ];
+
+  if (paths.length === 0 ) return;
+
+  const { data, error } = await storageAdmin.storage
+  .from("portfolio-media")
+  .remove(paths);
+
+if (error) {
+  console.error("Unable to remove old project images:", error);
+}
 }
 
 /** Retrieve all projects, including drafts and archived records, with galleries. */
@@ -488,6 +563,74 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
+    // Check the existing project and gallery before applying updates.
+  const { data: existingProject, error: existingProjectError } =
+    await admin.supabase
+      .from("projects")
+      .select("id, cover_image_url")
+      .eq("id", body.id)
+      .maybeSingle();
+
+  if (existingProjectError) {
+    console.error("Unable to check existing project:", existingProjectError);
+    return NextResponse.json(
+      { success: false, error: "Unable to validate the existing project." },
+      { status: 500 }
+    );
+  }
+
+  if (!existingProject) {
+    return NextResponse.json(
+      { success: false, error: "Project not found." },
+      { status: 404 }
+    );
+  }
+
+  const { data: existingImages, error: existingImagesError } =
+    await admin.supabase
+      .from("project_images")
+      .select("id, image_url")
+      .eq("project_id", body.id);
+
+  if (existingImagesError) {
+    console.error("Unable to check existing project images:", existingImagesError);
+    return NextResponse.json(
+      { success: false, error: "Unable to validate existing project images." },
+      { status: 500 }
+    );
+  }
+
+  const oldImageUrls = [
+  existingProject.cover_image_url,
+  ...(existingImages ?? []).map((image) => image.image_url),
+].filter(
+  (url): url is string => typeof url === "string" && url.length > 0,
+);
+
+  const effectiveCoverImage =
+    "cover_image_url" in validation.values
+      ? validation.values.cover_image_url
+      : existingProject.cover_image_url;
+
+  const effectiveGalleryCount =
+    validation.images !== undefined
+      ? validation.images.length
+      : (existingImages ?? []).length;
+
+  const hasCoverImage =
+    typeof effectiveCoverImage === "string" &&
+    effectiveCoverImage.trim().length > 0;
+
+  if (effectiveGalleryCount + (hasCoverImage ? 1 : 0) > 3) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "A project can have a maximum of 3 images, including its cover image.",
+      },
+      { status: 400 }
+    );
+  }
+
   let updatedProject: ProjectRecord | null = null;
 
   if (Object.keys(validation.values).length > 0) {
@@ -579,7 +722,23 @@ export async function PATCH(request: NextRequest) {
 
   const result = await attachProjectImages(admin.supabase, [updatedProject]);
 
-  return NextResponse.json({
+const currentImageUrls = [
+  result[0]?.cover_image_url,
+  ...(result[0]?.images ?? []).map((image) => image.image_url),
+].filter(
+  (url): url is string => typeof url === "string" && url.length > 0,
+);
+
+const unusedImageUrls = oldImageUrls.filter(
+  (url) => !currentImageUrls.includes(url),
+);
+
+await removeProjectStorageImages(
+  body.id,
+  unusedImageUrls,
+);
+
+return NextResponse.json({
     success: true,
     message: "Project updated successfully.",
     project: result[0],
@@ -614,6 +773,48 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
+  const { data: project, error: projectError } = await admin.supabase
+    .from("projects")
+    .select("id, cover_image_url")
+    .eq("id", body.id)
+    .maybeSingle();
+
+  if (projectError) {
+    console.error("Unable to retrieve project:", projectError);
+    return NextResponse.json(
+      { success: false, error: "Unable to retrieve project." },
+      { status: 500 }
+    );
+  }
+
+  if (!project) {
+    return NextResponse.json(
+      { success: false, error: "Project not found." },
+      { status: 404 }
+    );
+  }
+
+  const { data: galleryImages, error: imagesError } =
+    await admin.supabase
+      .from("project_images")
+      .select("image_url")
+      .eq("project_id", body.id);
+
+  if (imagesError) {
+    console.error("Unable to retrieve project images:", imagesError);
+    return NextResponse.json(
+      { success: false, error: "Unable to retrieve project images." },
+      { status: 500 }
+    );
+  }
+
+  const imageUrls = [
+    project.cover_image_url,
+    ...(galleryImages ?? []).map((image) => image.image_url),
+  ].filter(
+    (url): url is string => typeof url === "string" && url.length > 0
+  );
+
   const { data, error } = await admin.supabase
     .from("projects")
     .delete()
@@ -635,6 +836,11 @@ export async function DELETE(request: NextRequest) {
       { status: 404 }
     );
   }
+
+  await removeProjectStorageImages(
+    body.id,
+    imageUrls,
+  );
 
   return NextResponse.json({
     success: true,
