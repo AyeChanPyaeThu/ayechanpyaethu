@@ -246,8 +246,8 @@ export default function Navbar() {
             border-emerald-900/10"
             >
               <a
-                href="/pf9.jfif"
-                download="Aye-Chan-Pyae-Thu-Resume.jfif"
+                href="/profile/Aye_Chan_Pyae_Thu_Resume.pdf"
+                download="Aye_Chan_Pyae_Thu_Resume.pdf"
                 onClick={closeMenu}
                 tabIndex={menuOpen ? 0 : -1}
                 className="flex items-center justify-center
